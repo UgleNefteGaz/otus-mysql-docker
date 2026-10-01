@@ -756,6 +756,101 @@ Using where
 
 При необходимости перехода сразу на произвольную страницу, например страницу 1000, можно использовать `OFFSET`. Для последовательных переходов `Следующая` и `Предыдущая` предпочтительнее keyset pagination. Полный набор запросов находится в `pagination.sql`.
 
+## Импорт данных из CSV
+
+Для проверки импорта используется файл:
+
+```text
+data/users.csv
+```
+
+Содержимое:
+
+```text
+admin@example.com,Москва
+user@example.com,Волгоград
+quest@example.com,\N
+```
+
+Файл содержит две колонки:
+
+```text
+email
+city
+```
+
+Значение `\N` используется для представления `NULL`.
+
+### LOAD DATA
+
+Для импорта данных используется `LOAD DATA LOCAL INFILE`.
+
+На сервере MySQL предварительно включена переменная:
+
+```sql
+SET GLOBAL local_infile = 1;
+```
+
+Импорт выполняется запросом:
+
+```sql
+LOAD DATA LOCAL INFILE '/tmp/users.csv'
+INTO TABLE users
+CHARACTER SET utf8mb4
+FIELD TERMINATED BY ','
+LINES TERMINATED BY '\n'
+(email, city);
+```
+
+Клиент MySQL запускается с параметром:
+
+```text
+--local-infile=1
+```
+
+После иморта загружено 3 записи.
+
+Значение `\N` для пользователя `guest@example.com` было преобразовано в SQL `NULL`.
+
+### mysqlimport
+
+Перед проверкой второго способа таблица была очищена:
+
+```sql
+TRUNCATE TABLE users;
+```
+
+Импорт выполнен утилиой:
+
+```bash
+mysqlimport \
+  --local \
+  --users=root \
+  --password \
+  --default-character-set=utf8mb4 \
+  --fields-terminated-by=',' \
+  --lines-terminated-by='\n' \
+  --column=email,city \
+  import_test \
+  /tmp/users.csv
+```
+
+Результат:
+
+```text
+Records: 3
+Deleted: 0
+Skipped: 0
+Warnings: 0
+```
+
+Итоговая проверка показала 3 записи в таблице `users`.
+
+Оба способа успешно загрузили исходный CSV:
+
+- `LOAD DATA LOCAL INFILE`;
+- `mysqlimport`.
+
 # Итог
 
 В рамках работы была создана воспроизводимая среда MySQL в Docker.
