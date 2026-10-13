@@ -1,0 +1,325 @@
+{
+  "query_block": {
+    "select_id": 1,
+    "cost_info": {
+      "query_cost": "3284.46"
+    },
+    "ordering_operation": {
+      "using_filesort": true,
+      "grouping_operation": {
+        "using_temporary_table": true,
+        "using_filesort": true,
+        "buffer_result": {
+          "using_temporary_table": true,
+          "nested_loop": [
+            {
+              "table": {
+                "table_name": "o",
+                "access_type": "range",
+                "possible_keys": [
+                  "PRIMARY",
+                  "idx_orders_created_at"
+                ],
+                "key": "idx_orders_created_at",
+                "used_key_parts": [
+                  "created_at"
+                ],
+                "key_length": "4",
+                "rows_examined_per_scan": 1940,
+                "rows_produced_per_join": 646,
+                "filtered": "33.33",
+                "index_condition": "(`catalog_test`.`o`.`created_at` >= <cache>((now() - interval 7 day)))",
+                "cost_info": {
+                  "read_cost": "808.59",
+                  "eval_cost": "64.67",
+                  "prefix_cost": "873.26",
+                  "data_read_per_join": "10K"
+                },
+                "used_columns": [
+                  "order_id",
+                  "created_at",
+                  "status"
+                ],
+                "attached_condition": "(`catalog_test`.`o`.`status` = 'Оплачен')"
+              }
+            },
+            {
+              "table": {
+                "table_name": "oi",
+                "access_type": "ref",
+                "possible_keys": [
+                  "idx_order_items_order",
+                  "idx_order_items_product"
+                ],
+                "key": "idx_order_items_order",
+                "used_key_parts": [
+                  "order_id"
+                ],
+                "key_length": "8",
+                "ref": [
+                  "catalog_test.o.order_id"
+                ],
+                "rows_examined_per_scan": 2,
+                "rows_produced_per_join": 1722,
+                "filtered": "100.00",
+                "cost_info": {
+                  "read_cost": "430.57",
+                  "eval_cost": "172.23",
+                  "prefix_cost": "1476.06",
+                  "data_read_per_join": "67K"
+                },
+                "used_columns": [
+                  "order_item_id",
+                  "order_id",
+                  "product_id",
+                  "quantity",
+                  "unit_price"
+                ]
+              }
+            },
+            {
+              "table": {
+                "table_name": "p",
+                "access_type": "eq_ref",
+                "possible_keys": [
+                  "PRIMARY",
+                  "fk_products_category",
+                  "idx_products_manufacturer"
+                ],
+                "key": "PRIMARY",
+                "used_key_parts": [
+                  "product_id"
+                ],
+                "key_length": "8",
+                "ref": [
+                  "catalog_test.oi.product_id"
+                ],
+                "rows_examined_per_scan": 1,
+                "rows_produced_per_join": 1722,
+                "filtered": "100.00",
+                "cost_info": {
+                  "read_cost": "430.57",
+                  "eval_cost": "172.23",
+                  "prefix_cost": "2078.86",
+                  "data_read_per_join": "282K"
+                },
+                "used_columns": [
+                  "product_id",
+                  "title",
+                  "category_id",
+                  "manufacturer_id"
+                ]
+              }
+            },
+            {
+              "table": {
+                "table_name": "m",
+                "access_type": "eq_ref",
+                "possible_keys": [
+                  "PRIMARY"
+                ],
+                "key": "PRIMARY",
+                "used_key_parts": [
+                  "manufacturer_id"
+                ],
+                "key_length": "8",
+                "ref": [
+                  "catalog_test.p.manufacturer_id"
+                ],
+                "rows_examined_per_scan": 1,
+                "rows_produced_per_join": 1722,
+                "filtered": "100.00",
+                "cost_info": {
+                  "read_cost": "430.57",
+                  "eval_cost": "172.23",
+                  "prefix_cost": "2681.66",
+                  "data_read_per_join": "363K"
+                },
+                "used_columns": [
+                  "manufacturer_id",
+                  "title"
+                ]
+              }
+            },
+            {
+              "table": {
+                "table_name": "c",
+                "access_type": "eq_ref",
+                "possible_keys": [
+                  "PRIMARY"
+                ],
+                "key": "PRIMARY",
+                "used_key_parts": [
+                  "category_id"
+                ],
+                "key_length": "8",
+                "ref": [
+                  "catalog_test.p.category_id"
+                ],
+                "rows_examined_per_scan": 1,
+                "rows_produced_per_join": 1722,
+                "filtered": "100.00",
+                "cost_info": {
+                  "read_cost": "430.57",
+                  "eval_cost": "172.23",
+                  "prefix_cost": "3284.46",
+                  "data_read_per_join": "242K"
+                },
+                "used_columns": [
+                  "category_id",
+                  "title"
+                ]
+              }
+            }
+          ],
+          "having_subqueries": [
+            {
+              "dependent": true,
+              "cacheable": false,
+              "query_block": {
+                "select_id": 2,
+                "cost_info": {
+                  "query_cost": "21.85"
+                },
+                "table": {
+                  "table_name": "category_product_sales",
+                  "access_type": "ALL",
+                  "rows_examined_per_scan": 172,
+                  "rows_produced_per_join": 172,
+                  "filtered": "100.00",
+                  "cost_info": {
+                    "read_cost": "4.65",
+                    "eval_cost": "17.20",
+                    "prefix_cost": "21.85",
+                    "data_read_per_join": "6K"
+                  },
+                  "used_columns": [
+                    "product_id",
+                    "sales_amount"
+                  ],
+                  "materialized_from_subquery": {
+                    "using_temporary_table": true,
+                    "dependent": true,
+                    "cacheable": true,
+                    "query_block": {
+                      "select_id": 3,
+                      "cost_info": {
+                        "query_cost": "2078.86"
+                      },
+                      "grouping_operation": {
+                        "using_temporary_table": true,
+                        "using_filesort": false,
+                        "nested_loop": [
+                          {
+                            "table": {
+                              "table_name": "o2",
+                              "access_type": "range",
+                              "possible_keys": [
+                                "PRIMARY",
+                                "idx_orders_created_at"
+                              ],
+                              "key": "idx_orders_created_at",
+                              "used_key_parts": [
+                                "created_at"
+                              ],
+                              "key_length": "4",
+                              "rows_examined_per_scan": 1940,
+                              "rows_produced_per_join": 646,
+                              "filtered": "33.33",
+                              "index_condition": "(`catalog_test`.`o2`.`created_at` >= <cache>((now() - interval 7 day)))",
+                              "cost_info": {
+                                "read_cost": "808.59",
+                                "eval_cost": "64.67",
+                                "prefix_cost": "873.26",
+                                "data_read_per_join": "10K"
+                              },
+                              "used_columns": [
+                                "order_id",
+                                "created_at",
+                                "status"
+                              ],
+                              "attached_condition": "(`catalog_test`.`o2`.`status` = 'Оплачен')"
+                            }
+                          },
+                          {
+                            "table": {
+                              "table_name": "oi2",
+                              "access_type": "ref",
+                              "possible_keys": [
+                                "idx_order_items_order",
+                                "idx_order_items_product"
+                              ],
+                              "key": "idx_order_items_order",
+                              "used_key_parts": [
+                                "order_id"
+                              ],
+                              "key_length": "8",
+                              "ref": [
+                                "catalog_test.o2.order_id"
+                              ],
+                              "rows_examined_per_scan": 2,
+                              "rows_produced_per_join": 1722,
+                              "filtered": "100.00",
+                              "cost_info": {
+                                "read_cost": "430.57",
+                                "eval_cost": "172.23",
+                                "prefix_cost": "1476.06",
+                                "data_read_per_join": "67K"
+                              },
+                              "used_columns": [
+                                "order_item_id",
+                                "order_id",
+                                "product_id",
+                                "quantity",
+                                "unit_price"
+                              ]
+                            }
+                          },
+                          {
+                            "table": {
+                              "table_name": "p2",
+                              "access_type": "eq_ref",
+                              "possible_keys": [
+                                "PRIMARY",
+                                "uq_products_price",
+                                "fk_products_category",
+                                "idx_products_status_price",
+                                "idx_products_manufacturer"
+                              ],
+                              "key": "PRIMARY",
+                              "used_key_parts": [
+                                "product_id"
+                              ],
+                              "key_length": "8",
+                              "ref": [
+                                "catalog_test.oi2.product_id"
+                              ],
+                              "rows_examined_per_scan": 1,
+                              "rows_produced_per_join": 172,
+                              "filtered": "10.00",
+                              "cost_info": {
+                                "read_cost": "430.57",
+                                "eval_cost": "17.22",
+                                "prefix_cost": "2078.86",
+                                "data_read_per_join": "28K"
+                              },
+                              "used_columns": [
+                                "product_id",
+                                "category_id"
+                              ],
+                              "attached_condition": "(`catalog_test`.`p2`.`category_id` = `catalog_test`.`c`.`category_id`)"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}
