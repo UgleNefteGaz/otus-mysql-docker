@@ -1,0 +1,48 @@
+[mysqld]
+
+# Node identity
+server-id=203
+
+# MySQL
+port=6000
+bind-address=127.0.0.1
+mysqlx=0
+
+# Binary log
+log-bin=node3-bin
+binlog_format=ROW
+
+# InnoDB
+default_storage_engine=InnoDB
+innodb_autoinc_lock_mode=2
+
+# PXC / Galera
+wsrep_on=ON
+
+# Path to libgalera_smm.so must be adjusted for the local installation.
+# Example:
+# wsrep_provider=/opt/percona-xtradb-cluster/lib/libgalera_smm.so
+
+wsrep_cluster_name=pxc-lab
+
+# Other cluster members
+wsrep_cluster_address=gcomm://127.0.0.1:4030,127.0.0.1:5030
+
+# Node identity inside Galera
+wsrep_node_name=node3
+wsrep_node_address=127.0.0.1:6030
+wsrep_node_incoming_address=127.0.0.1
+
+# Galera replication and IST ports
+wsrep_provider_options="gmcast.listen_addr=tcp://127.0.0.1:6030;ist.recv_addr=127.0.0.1:6040"
+
+# State Snapshot Transfer
+wsrep_sst_method=xtrabackup-v2
+wsrep_sst_receive_address=127.0.0.1:6020
+
+# PXC behavior
+pxc_strict_mode=ENFORCING
+pxc-encrypt-cluster-traffic=OFF
+
+# Parallel apply threads
+wsrep_applier_threads=8

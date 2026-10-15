@@ -1391,6 +1391,80 @@ Auto_Position: 1
 
 Асинхронность была продемонстрированна остановкой `Replica SQL thread`: Source продолжал принимать транзакции, а Replica применила накопленные изменения после повторного запуска SQL thread. Подробное описание находится в `docs/gtid-replication.md`.
 
+### Percona XtraDB Cluster
+
+Развёрнут Percona XtraDB Cluster 8.0.41-32.1 из трёх нод.
+
+Схема:
+
+```text
+node1 - MySQL 4000, Galera 4030
+node2 - MySQL 5000, Galera 5030
+node3 - MySQL 6000, Galera 6030
+```
+
+В штатном состоянии на всех нодах:
+
+```text
+wsrep_cluster_size = 3
+wsrep_cluster_status = Primary
+wsrep_local_state_comment = Synced
+wsrep_ready = ON
+```
+
+Проверена синхронизация данных между всеми тремя нодами.
+
+При отказе одной ноды кластер сохраняет кворум:
+
+```text
+2 из 3 нод
+wsrep_cluster_status = Primary
+```
+
+Чтение и запись продолжают работать.
+
+Также проверена потеря кворума при аварийном отказе двух нод:
+
+```text
+1 из 3 нод
+wsrep_cluster_status = non-Primary
+wsrep_ready = OFF
+```
+
+В этом состоянии application-запросы блокируются:
+
+```text
+ERROR 1047:
+WSREP has not yet prepared node for application use
+```
+
+Primary Component был восстановлен командой:
+
+```sql
+SET GLOBAL wsrep_provider_options='pc.bootstrap=YES';
+```
+
+После восстановления остальные ноды повторно присоединились к кластеру.
+
+В ходе тестирования продемонстрированы оба механизма синхронизации:
+
+```text
+IST - Incremental State Transfer
+SST - State Snapshot Transfer
+```
+
+Подробный отчет:
+
+```text
+docs/pxc-cluster.md
+```
+
+Конфигурация и тестовые сценарии:
+
+```text
+pxc/
+```
+
 # Итог
 
 В рамках работы была создана воспроизводимая среда MySQL в Docker.

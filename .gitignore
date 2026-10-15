@@ -3,3 +3,6 @@ xtrabackup-lab/
 
 # MySQL Source-Replica laboratory runtime files
 replication-lab
+
+# Percona XtraDB Cluster laboratory runtime files
+pxc-lab/
