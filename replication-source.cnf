@@ -1,0 +1,14 @@
+[mysqld]
+
+server-id=101
+
+port=3310
+bind-address=127.0.0.1
+
+log-bin=source-bin
+binlog_format=ROW
+
+gtid_mode=ON
+enforce_gtid_consistency=ON
+
+binlog_expire_logs_seconds=604800

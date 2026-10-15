@@ -1,2 +1,5 @@
 # XtraBackup laboratory runtime files
 xtrabackup-lab/
+
+# MySQL Source-Replica laboratory runtime files
+replication-lab

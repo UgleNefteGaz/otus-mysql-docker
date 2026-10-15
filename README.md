@@ -1349,6 +1349,48 @@ ANALYZE TABLE orders;
 
 Исходный и оптимизированный запросы возвращают одинаковые 1720 строк. Сравнение результатов в обе стороны не выявило различий. Подробный анализ находится в `docs/explain-optimization.md`.
 
+### GTID Source-Replica replication
+
+НАстроена асинхронная репликация двух экзамепляров Percona Server for MySQL 8.0.41-32. Используются:
+
+```text
+Source	- server-id 101, port 3310
+Replica	- server-id 102, port 3311
+```
+
+Репликация работает со следующими параметрами:
+
+```text
+gtid_mode=ON
+enforce_ftid_consistency=ON
+SOURCE_AUTO_POSITION=1
+```
+
+Replica работает в режиме:
+
+```text
+read_only=ON
+super_read_only=ON
+```
+
+Выборочная репликация исключает:
+
+```text
+app.audit_log
+replica_excluded.*
+```
+
+Начальные данные были переданы через `mysqldump` с параметром `--set-gtid-purged=ON`. Финальное состояние:
+
+```text
+Replica_IO_Running: Yes
+Replica_SQL_Running: Yes
+Seconds_Behind_Source: 0
+Auto_Position: 1
+```
+
+Асинхронность была продемонстрированна остановкой `Replica SQL thread`: Source продолжал принимать транзакции, а Replica применила накопленные изменения после повторного запуска SQL thread. Подробное описание находится в `docs/gtid-replication.md`.
+
 # Итог
 
 В рамках работы была создана воспроизводимая среда MySQL в Docker.
