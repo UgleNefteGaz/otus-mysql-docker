@@ -1465,6 +1465,68 @@ docs/pxc-cluster.md
 pxc/
 ```
 
+### MongoDB
+
+Развёрнута MongoDB Community Server 8.0 в Docker. Контейнер: `mongodb-lab`. Тестовая база: `shop`. В базе две коллекции: `customers` на 10000 документов и `orders` на 100000 документов.
+
+Реализованы примеры взаимодействия с базой:
+
+```text
+findOne()
+find()
+sort()
+limit()
+countDocuments()
+updateOne()
+updateMany()
+```
+
+Для сравнения производительности использован `explain("executionStats"). Созданы индексы:
+
+```text
+idx_customers_customerId
+idx_orders_customerId
+idx_orders_status_amount
+```
+
+До создания индексов запросы выполнялись через `COLLSCAN`, после создания индексов - `FETCH -> IXSCAN`. Результаты сравнения:
+
+```text
+customers.customerId:
+10000 -> 1 просмотренный документ
+
+orders.customerId:
+100000 -> 10 просмотренных документов
+
+orders status + amount:
+100000 -> 4005 просмотренных документов
+```
+
+Время выполнения тестовых запросов также уменьшилось:
+
+```text
+3 ms  -> 1 ms
+25 ms -> 0 ms
+27 ms -> 5 ms
+```
+
+Подробный отчёт: `docs/mongodb.md`.
+
+Файлы лабораторной:
+
+```text
+mongodb/
+├── compose.yaml
+├── init/
+│   └── 01-load-data.js
+├── queries/
+│   └── 01-queries.js
+└── benchmark/
+    ├── 01-before-indexes.js
+    ├── 02-create-indexes.js
+    └── 03-after-indexes.js
+```
+
 # Итог
 
 В рамках работы была создана воспроизводимая среда MySQL в Docker.

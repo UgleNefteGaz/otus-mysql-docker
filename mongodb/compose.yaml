@@ -1,0 +1,19 @@
+services:
+  mongodb:
+    image: mongodb/mongodb-community-server:8.0-ubi8
+    container_name: mongodb-lab
+
+    ports:
+      - "127.0.0.1:27017:27017"
+
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: mongo_123
+
+    volumes:
+      - mongodb_data:/data/db
+
+    restart: unless-stopped
+
+volumes:
+  mongodb_data:
